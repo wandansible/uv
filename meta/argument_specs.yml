@@ -1,0 +1,183 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure uv python package and project manager
+    options:
+      uv_github_org:
+        description: Name of organisation for uv github repository
+        type: str
+        default: astral-sh
+
+      uv_github_repo:
+        description: Name of uv github repository
+        type: str
+        default: uv
+
+      uv_github_token:
+        description: Optional bearer token to use to authenticate with api.github.com
+        type: str
+        default: ""
+
+      uv_archive_extension:
+        description: File extension for the uv package archive
+        type: str
+        default: tar.gz
+
+      uv_checksum_type:
+        description: The uv package checksum type
+        type: str
+        default: sha256
+
+      uv_version:
+        description: Version to install (use "latest" for the latest version)
+        type: str
+        default: latest
+
+      uv_install:
+        description: If true, install uv
+        type: bool
+        default: true
+
+      uv_bin_dir:
+        description: Directory for the uv binaries
+        type: str
+        default: /opt/uv
+
+      uv_src_dir:
+        description: Directory for the downloaded uv src archive
+        type: str
+        default: /opt/uv/src
+
+      uv_strip_components:
+        description: Strip NUMBER leading components from file names on extraction
+        type: int
+        default: 1
+
+      uv_src_files:
+        description: List of files to extract from the source archive
+        type: list
+        elements: str
+        default:
+          - uv
+          - uvx
+
+      uv_clean_src_dir:
+        description: Remove old downloaded archive files from uv src directory
+        type: bool
+        default: true
+
+      uv_cli_tools:
+        description: List of CLI tool binaries that should have symlinks created in /usr/local/bin/
+        type: list
+        default:
+          - uv
+          - uvx
+
+      uv_update_time:
+        description: |
+          How often to update uv, accepts a systemd time,
+          see https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html,
+          or "never"
+        type: str
+        default: "daily"
+
+      uv_update_randomized_delay:
+        description: |
+          Delay the uv update timer by a random time up
+          to this value or empty string for no delay
+        type: str
+        default: "6h"
+
+      uv_tool_upgrade_time:
+        description: |
+          How often to upgrade uv tools,
+          accepts a systemd time,
+          see https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html,
+          or "never"
+        type: str
+        default: "never"
+
+      uv_tool_upgrade_randomized_delay:
+        description: |
+          Delay the uv tool upgrade timer by a random time up
+          to this value or empty string for no delay
+        type: str
+        default: "6h"
+
+      uv_cache_prune_time:
+        description: |
+          How often to prune the uv cache,
+          accepts a systemd time,
+          see https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html,
+          or "never"
+        type: str
+        default: "never"
+
+      uv_cache_prune_randomized_delay:
+        description: |
+          Delay the uv cache prune timer by a random time up
+          to this value or empty string for no delay
+        type: str
+        default: "6h"
+
+      uv_users:
+        description: List of user accounts to install uv for
+        type: list
+        elements: dict
+        default: []
+        options:
+          username:
+            description: Name of the user account
+            type: str
+            required: true
+          tools:
+            description: Python tools to install with uv
+            type: list
+            elements: dict
+            options:
+              name:
+                description: Tool name
+                type: str
+                required: true
+              install:
+                description: Tool install arguments
+                type: str
+              state:
+                description: Tool state
+                type: str
+                choices:
+                  - present
+                  - absent
+                default: present
+          venvs:
+            description: Python virtual environments to install with uv
+            type: list
+            elements: dict
+            options:
+              path:
+                description: Virtual environment path
+                type: str
+                required: true
+              requirements:
+                description: |
+                  Python dependencies to install in virtual environment
+                  in requirements.txt format with uv pip install
+                type: str
+              pip_install_args:
+                description: Extra arguments to provide to uv pip install
+                type: str
+              lockfile:
+                description: |
+                  Python dependencies to install in virtual environment
+                  in requirements.txt or pylock.toml format with uv pip sync
+                type: str
+              pip_sync_args:
+                description: Extra arguments to provide to uv pip sync
+                type: str
+              state:
+                description: Virtual environment state
+                type: str
+                choices:
+                  - present
+                  - absent
+                default: present
