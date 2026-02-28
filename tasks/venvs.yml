@@ -1,0 +1,8 @@
+---
+- name: Configure venv
+  ansible.builtin.include_tasks:
+    file: create-venv.yml
+  loop: "{{ item.venvs }}"
+  loop_control:
+    loop_var: "venv"
+    label: "{{ venv.path }}"

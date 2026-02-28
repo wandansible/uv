@@ -1,0 +1,62 @@
+---
+- name: "Install python tools with uv"
+  vars:
+    _uv_tool_action: >-
+      {{ "uninstall" if tool.state | default(None) == "absent" else "install" }}
+    _uv_tool_args: |-
+      {% if _uv_tool_action == "uninstall" -%}
+      {{ tool.name }}
+      {% elif "install" in tool -%}
+      {{ tool.install }}
+      {% else -%}
+      {{ tool.name }}
+      {%- endif %}
+  ansible.builtin.command:
+    cmd: "uv tool {{ _uv_tool_action }} {{ _uv_tool_args }}"
+  become: true
+  become_user: "{{ item.username }}"
+  register: _uv_tool_cmd
+  changed_when:
+    - not (_uv_tool_action == "install" and "is already installed" is in _uv_tool_cmd.stderr)
+    - not (_uv_tool_action == "uninstall" and "is not installed" is in _uv_tool_cmd.stderr)
+  failed_when:
+    - _uv_tool_cmd.rc != 0
+    - not (_uv_tool_action == "uninstall" and "is not installed" is in _uv_tool_cmd.stderr)
+  loop: "{{ item.tools }}"
+  loop_control:
+    loop_var: "tool"
+    label: "{{ tool.name }}"
+
+- name: "Enable uv tool upgrade systemd timer"
+  become: true
+  become_user: "{{ item.username }}"
+  when: uv_tool_upgrade_time != "never"
+  block:
+    - name: Create systemd user directory
+      ansible.builtin.file:
+        path: "~/.config/systemd/user/"
+        state: directory
+        mode: u=rwx,g=rx,o=rx
+
+    - name: Add uv tool upgrade service
+      ansible.builtin.template:
+        src: uv-tool-upgrade.service
+        dest: "~/.config/systemd/user/uv-tool-upgrade.service"
+        mode: u=rw,g=r,o=r
+      register: _service_file
+
+    - name: Add uv tool upgrade systemd timer
+      ansible.builtin.template:
+        src: uv-tool-upgrade.timer
+        dest: "~/.config/systemd/user/uv-tool-upgrade.timer"
+        mode: u=rw,g=r,o=r
+      register: _timer_file
+
+    - name: Start and enable uv tool upgrade systemd timer
+      ansible.builtin.systemd:
+        name: uv-tool-upgrade.timer
+        daemon_reload: >-
+          {{ true if _service_file is changed or _timer_file is changed else false }}
+        scope: user
+        state: started
+        enabled: true

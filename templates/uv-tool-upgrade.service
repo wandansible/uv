@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Upgrade uv tools"
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uv tool upgrade --all
+
+[Install]
+WantedBy=multi-user.target

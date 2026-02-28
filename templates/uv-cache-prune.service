@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Prune uv cache"
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uv cache prune
+
+[Install]
+WantedBy=multi-user.target

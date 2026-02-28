@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Update uv timer"
+
+[Timer]
+Unit=uv-update.service
+OnCalendar={{ uv_update_time }}
+{% if uv_update_randomized_delay != "" %}
+RandomizedDelaySec={{ uv_update_randomized_delay }}
+{% endif %}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

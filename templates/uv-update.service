@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Update uv"
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uv self update {{ "--token "+uv_github_token if uv_github_token != "" }}
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,45 @@
+---
+- name: Configure venv
+  become: true
+  become_user: "{{ item.username }}"
+  block:
+    - name: "Check for python venv"
+      ansible.builtin.stat:
+        path: "{{ venv.path }}"
+      register: _venv_stat
+
+    - name: "Create python venv with uv"
+      ansible.builtin.command:
+        cmd: "uv venv --allow-existing {{ venv.args | default('') }} {{ venv.path }}"
+      changed_when: not _venv_stat.stat.exists
+      when: "venv.state | default('present') == 'present'"
+
+    - name: "Remove python venv"
+      ansible.builtin.file:
+        path: "{{ venv.path }}"
+        state: absent
+      when: "venv.state | default('present') == 'absent'"
+
+    - name: "Install python requirements in venv with requirements.txt"
+      ansible.builtin.command:
+        cmd: >-
+          uv pip install --upgrade
+          {{ venv.pip_install_args | default('') }}
+          --directory {{ venv.path }}
+          --requirements -
+        stdin: "{{ venv.requirements }}"
+      register: _uv_pip_install
+      changed_when: "' + ' in _uv_pip_install.stderr or ' - ' in _uv_pip_install.stderr"
+      when: "'requirements' in venv"
+
+    - name: "Sync python requirements in venv with lockfile"
+      ansible.builtin.command:
+        cmd: >-
+          uv pip sync --reinstall
+          {{ venv.pip_sync_args | default('') }}
+          --directory {{ venv.path }}
+          -
+        stdin: "{{ venv.lockfile }}"
+      register: _uv_pip_sync
+      changed_when: "' + ' in _uv_pip_sync.stderr or ' - ' in _uv_pip_sync.stderr"
+      when: "'lockfile' in venv"

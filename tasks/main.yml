@@ -1,0 +1,25 @@
+---
+- name: Install uv
+  ansible.builtin.include_tasks:
+    file: install.yml
+
+- name: Configure uv tools
+  ansible.builtin.include_tasks:
+    file: tools.yml
+  loop: "{{ uv_users }}"
+  loop_control:
+    label: "{{ item.username }}"
+
+- name: Configure uv venvs
+  ansible.builtin.include_tasks:
+    file: venvs.yml
+  loop: "{{ uv_users }}"
+  loop_control:
+    label: "{{ item.username }}"
+
+- name: Configure uv cache
+  ansible.builtin.include_tasks:
+    file: cache.yml
+  loop: "{{ uv_users }}"
+  loop_control:
+    label: "{{ item.username }}"

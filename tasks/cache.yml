@@ -1,0 +1,34 @@
+---
+- name: "Enable uv cache prune systemd timer"
+  become: true
+  become_user: "{{ item.username }}"
+  when: uv_cache_prune_time != "never"
+  block:
+    - name: Create systemd user directory
+      ansible.builtin.file:
+        path: "~/.config/systemd/user/"
+        state: directory
+        mode: u=rwx,g=rx,o=rx
+
+    - name: Add uv cache prune service
+      ansible.builtin.template:
+        src: uv-cache-prune.service
+        dest: "~/.config/systemd/user/uv-cache-prune.service"
+        mode: u=rw,g=r,o=r
+      register: _service_file
+
+    - name: Add uv cache prune systemd timer
+      ansible.builtin.template:
+        src: uv-cache-prune.timer
+        dest: "~/.config/systemd/user/uv-cache-prune.timer"
+        mode: u=rw,g=r,o=r
+      register: _timer_file
+
+    - name: Start and enable uv cache prune systemd timer
+      ansible.builtin.systemd:
+        name: uv-cache-prune.timer
+        daemon_reload: >-
+          {{ true if _service_file is changed or _timer_file is changed else false }}
+        scope: user
+        state: started
+        enabled: true

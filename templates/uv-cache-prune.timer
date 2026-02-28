@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Prune uv cache timer"
+
+[Timer]
+Unit=uv-cache-prune.service
+OnCalendar={{ uv_cache_prune_time }}
+{% if uv_cache_prune_randomized_delay != "" %}
+RandomizedDelaySec={{ uv_cache_prune_randomized_delay }}
+{% endif %}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

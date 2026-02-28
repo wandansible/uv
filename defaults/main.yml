@@ -1,0 +1,31 @@
+---
+uv_github_org: astral-sh
+uv_github_repo: uv
+uv_github_token: ""
+uv_archive_extension: "tar.gz"
+uv_checksum_type: sha256
+
+uv_version: "latest"
+
+uv_install: "true"
+uv_bin_dir: /opt/uv
+uv_src_dir: /opt/uv/src
+uv_strip_components: 1
+uv_src_files:
+  - uv
+  - uvx
+uv_clean_src_dir: true
+uv_cli_tools:
+  - uv
+  - uvx
+
+uv_update_time: "daily"
+uv_update_randomized_delay: "6h"
+
+uv_tool_upgrade_time: "never"
+uv_tool_upgrade_randomized_delay: "6h"
+
+uv_cache_prune_time: "never"
+uv_cache_prune_randomized_delay: "6h"
+
+uv_users: []

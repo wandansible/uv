@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description="Upgrade uv tools timer"
+
+[Timer]
+Unit=uv-tool-upgrade.service
+OnCalendar={{ uv_tool_upgrade_time }}
+{% if uv_tool_upgrade_randomized_delay != "" %}
+RandomizedDelaySec={{ uv_tool_upgrade_randomized_delay }}
+{% endif %}
+Persistent=true
+
+[Install]
+WantedBy=timers.target
