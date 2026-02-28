@@ -1,0 +1,22 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include wandansible.uv"
+      ansible.builtin.include_role:
+        name: "wandansible.uv"
+      vars:
+        uv_github_token: "{{ lookup('env', 'GITHUB_TOKEN') }}"
+
+        uv_users:
+          - username: user
+            tools:
+              - name: ansible
+                install: --with-executables-from ansible-core,ansible-lint ansible
+              - name: yt-dlp
+                install: yt-dlp[default]
+              - name: ruff
+            venvs:
+              - path: ~/.local/share/uv/venvs/test
+                requirements: |
+                  pynvim
