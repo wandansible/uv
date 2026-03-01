@@ -60,3 +60,22 @@
         scope: user
         state: started
         enabled: true
+
+- name: "Disable uv tool upgrade systemd timer"
+  when: uv_tool_upgrade_time == "never"
+  block:
+    - name: Remove uv tool upgrade service and timer
+      ansible.builtin.file:
+        path: "/etc/systemd/system/{{ item }}"
+        state: "absent"
+      loop:
+        - "uv-tool-upgrade.service"
+        - "uv-tool-upgrade.timer"
+      register: _remove_files
+
+    - name: Disable uv tool upgrade systemd timer
+      ansible.builtin.command:
+        cmd: systemctl --user disable uv-tool-upgrade.timer
+      register: _systemctl_disable
+      changed_when: "'removed' in _systemctl_disable.stderr | lower"
+      when: _remove_files is changed

@@ -32,3 +32,22 @@
         scope: user
         state: started
         enabled: true
+
+- name: "Disable uv cache prune systemd timer"
+  when: uv_cache_prune_time == "never"
+  block:
+    - name: Remove uv cache prune service and timer
+      ansible.builtin.file:
+        path: "/etc/systemd/system/{{ item }}"
+        state: "absent"
+      loop:
+        - "uv-cache-prune.service"
+        - "uv-cache-prune.timer"
+      register: _remove_files
+
+    - name: Disable uv cache prune systemd timer
+      ansible.builtin.command:
+        cmd: systemctl --user disable uv-cache-prune.timer
+      register: _systemctl_disable
+      changed_when: "'removed' in _systemctl_disable.stderr | lower"
+      when: _remove_files is changed
