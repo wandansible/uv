@@ -126,6 +126,7 @@
         group: root
         mode: u=rw,g=r,o=r
       register: _service_file
+      no_log: true
 
     - name: Add uv update systemd timer
       ansible.builtin.template:
