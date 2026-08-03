@@ -8,18 +8,21 @@
     file: tools.yml
   loop: "{{ uv_users }}"
   loop_control:
-    label: "{{ item.username }}"
+    loop_var: "user"
+    label: "{{ user.username }}"
 
 - name: Configure uv venvs
   ansible.builtin.include_tasks:
     file: venvs.yml
   loop: "{{ uv_users }}"
   loop_control:
-    label: "{{ item.username }}"
+    loop_var: "user"
+    label: "{{ user.username }}"
 
 - name: Configure uv cache
   ansible.builtin.include_tasks:
     file: cache.yml
   loop: "{{ uv_users }}"
   loop_control:
-    label: "{{ item.username }}"
+    loop_var: "user"
+    label: "{{ user.username }}"

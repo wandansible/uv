@@ -1,7 +1,7 @@
 ---
 - name: "Enable uv cache prune systemd timer"
   become: true
-  become_user: "{{ item.username }}"
+  become_user: "{{ user.username }}"
   when: uv_cache_prune_time != "never"
   block:
     - name: Create systemd user directory

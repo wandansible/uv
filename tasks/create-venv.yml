@@ -1,7 +1,7 @@
 ---
 - name: Configure venv
   become: true
-  become_user: "{{ item.username }}"
+  become_user: "{{ user.username }}"
   block:
     - name: "Check for python venv"
       ansible.builtin.stat:
