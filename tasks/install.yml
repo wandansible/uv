@@ -144,7 +144,7 @@
         dest: "/etc/systemd/system/uv-update.service"
         owner: root
         group: root
-        mode: u=rw,g=r,o=r
+        mode: u=rw,g=r,o=
       register: _service_file
       no_log: true
 
