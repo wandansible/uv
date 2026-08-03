@@ -74,6 +74,26 @@
       retries: 6
       delay: 15
 
+    - name: Check for gh CLI tool
+      ansible.builtin.command:
+        cmd: gh version
+      failed_when: false
+      changed_when: false
+      register: _gh_cli
+
+    - name: Verify archive signature
+      ansible.builtin.command:
+        cmd: >-
+          gh attestation verify
+            '{{ uv_src_dir }}/{{ _uv_archive_filename }}'
+            --repo '{{ uv_github_org }}/{{ uv_github_repo }}'
+      environment:
+        GH_TOKEN: "{{ uv_github_token }}"
+      changed_when: false
+      when:
+        - _gh_cli.rc == 0
+        - uv_github_token != ""
+
     - name: "Extract files from archive"
       ansible.builtin.unarchive:
         src: "{{ uv_src_dir }}/{{ _uv_archive_filename }}"

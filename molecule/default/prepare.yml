@@ -5,3 +5,25 @@
     - name: "Create user"
       ansible.builtin.user:
         name: user
+
+    - name: "Install python3-debian"
+      ansible.builtin.apt:
+        pkg: "python3-debian"
+        state: "present"
+
+    - name: "Add gh cli apt repository"
+      ansible.builtin.deb822_repository:
+        name: "gh"
+        types: "deb"
+        uris: "https://cli.github.com/packages"
+        suites: "stable"
+        components:
+          - "main"
+        signed_by: "https://cli.github.com/packages/githubcli-archive-keyring.gpg"
+        state: "present"
+
+    - name: "Install gh cli"
+      ansible.builtin.apt:
+        pkg: "gh"
+        update_cache: "yes"
+        state: "present"
