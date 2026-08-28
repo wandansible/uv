@@ -9,6 +9,7 @@
   loop:
     - "{{ uv_bin_dir }}"
     - "{{ uv_src_dir }}"
+    - "{{ uv_receipt_dir }}"
 
 - name: "Get GitHub release information"
   run_once: true
@@ -117,6 +118,18 @@
         group: root
       loop: "{{ uv_src_files }}"
       ignore_errors: "{{ ansible_check_mode }}"
+      register: _uv_install
+
+    - name: Create uv install receipt
+      vars:
+        uv_version: "{{ hostvars['localhost'].ansible_facts.github_uv_release_info.tag_name }}"
+      ansible.builtin.template:
+        src: uv-receipt.json
+        dest: "{{ uv_receipt_dir }}/uv-receipt.json"
+        owner: root
+        group: root
+        mode: u=rw,g=r,o=r
+      when: _uv_install is changed
 
     - name: Get downloaded archive files
       ansible.builtin.find:
