@@ -48,6 +48,11 @@ argument_specs:
         type: str
         default: /opt/uv/src
 
+      uv_receipt_dir:
+        description: Directory for the uv install receipt
+        type: str
+        default: /root/.config/uv
+
       uv_strip_components:
         description: Strip NUMBER leading components from file names on extraction
         type: int

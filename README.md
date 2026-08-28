@@ -63,6 +63,10 @@ Options (= indicates it is required):
           default: true
           type: bool
 
+- uv_receipt_dir  Directory for the uv install receipt
+          default: /root/.config/uv
+          type: str
+
 - uv_src_dir  Directory for the downloaded uv src archive
           default: /opt/uv/src
           type: str
